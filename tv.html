@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>रिक्ति प्रतिवेदन</title>
+
+<style>
+body { font-family: Arial; background:#f4f4f4; margin:0; }
+.container { max-width:1200px; margin:auto; background:#fff; padding:15px; }
+
+h2, h3 { text-align:center; }
+
+table { width:100%; border-collapse:collapse; margin-bottom:15px; }
+th, td { border:1px solid #000; padding:4px; text-align:center; font-size:12px; }
+
+input { width:95%; border:none; text-align:center; }
+
+.tabs { display:flex; flex-wrap:wrap; margin:10px 0; }
+.tab { padding:8px; background:#ccc; margin:2px; cursor:pointer; }
+.tab.active { background:#000; color:#fff; }
+
+button {
+  width:100%;
+  padding:12px;
+  background:green;
+  color:#fff;
+  border:none;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>विद्यालयवार एवं विषयवार रिक्ति प्रतिवेदन</h2>
+
+<!-- HEADER -->
+<table>
+<tr><td>प्रखंड</td><td><select id="block">
+<option>SELECT</option>
+<option>AMARPUR</option>
+<option>BARAHAT</option>
+<option>BANKA</option>
+<option>BELHAR</option>
+<option>BOUNSI</option>
+<option>CHANDAN</option>
+<option>DHORAIYA</option>
+<option>FULLIDUMAR</option>
+<option>KATORIYA</option>
+<option>RAJOUN</option>
+<option>SHAMBHUGANJ</option>
+</select>
+</td>
+<td>पंचायत</td><td><input id="panchayat"></td></tr>
+<tr><td>विद्यालय</td><td><input id="school"></td><td>प्रधान</td><td><input id="head"></td></tr>
+<tr><td>UDISE</td><td><input id="udise"></td><td>मोबाइल</td><td><input id="mobile"></td></tr>
+<tr><td>वर्ग-कक्ष की संख्या</td><td colspan="3"><input id="rooms"></td></tr>
+</table>
+
+<!-- ENROLLMENT -->
+<h3>छात्र नामांकन प्रतिवेदन</h3>
+<table>
+<tr><th>वर्ग</th><th>सामान्य</th><th>उर्दू</th><th>कला</th><th>वाणिज्य</th><th>विज्ञान</th></tr>
+<tr><td>1-5</td><td><input></td><td><input></td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>6-8</td><td><input></td><td><input></td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>9-10</td><td><input></td><td><input></td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>11-12</td><td>-</td><td>-</td><td><input></td><td><input></td><td><input></td></tr>
+</table>
+
+<h2>अन्य विद्यालय में प्रतिनियुक्त किये गए शिक्षक की गणना उनके मूल विद्यालय में की जाय |</h2>
+
+<!-- TABS -->
+<div class="tabs">
+<div class="tab active" onclick="showTab(0)">01-05</div>
+<div class="tab" onclick="showTab(1)">06-08</div>
+<div class="tab" onclick="showTab(2)">09-10</div>
+<div class="tab" onclick="showTab(3)">11-12</div>
+</div>
+
+<div id="sections"></div>
+
+<button onclick="submitAll()">Submit</button>
+
+</div>
+
+<script>
+
+// TAB
+function showTab(i){
+document.querySelectorAll(".tab").forEach((t,idx)=>t.classList.toggle("active", idx===i));
+document.querySelectorAll(".section").forEach((s,idx)=>s.style.display = idx===i ? "block":"none");
+}
+
+// TABLE CREATE
+function createTable(subjects){
+
+let html = `<div class="section" style="display:none">
+<table>
+
+<tr>
+<th rowspan="3">क्र०</th>
+<th rowspan="3">विषय</th>
+<th colspan="8">कार्यरत शिक्षक</th>
+<th rowspan="3">कुल</th>
+<th rowspan="3">शिक्षक की आवश्यकता (सं०)</th>
+<th rowspan="3">अभ्युक्ति</th>
+</tr>
+
+<tr>
+<th colspan="2">नियमित</th>
+<th colspan="2">विशिष्ट</th>
+<th colspan="2">TRE</th>
+<th colspan="2">नियोजित</th>
+</tr>
+
+<tr>
+<th>महिला</th><th>पुरुष</th>
+<th>महिला</th><th>पुरुष</th>
+<th>महिला</th><th>पुरुष</th>
+<th>महिला</th><th>पुरुष</th>
+</tr>
+`;
+
+subjects.forEach((s,i)=>{
+html+=`
+<tr>
+<td>${i+1}</td>
+<td>${s}</td>
+
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+<td><input class="n"></td>
+
+<td><input class="total" readonly></td>
+<td><input></td>
+<td><input></td>
+</tr>`;
+});
+
+html+=`</table></div>`;
+return html;
+}
+
+// ALL SUBJECTS (UPDATED FINAL)
+let html = "";
+
+// 1-5
+html += createTable([
+"Bangla (बंगला)",
+"General (सामान्य)",
+"Physical Education (Basic Grade) - शारीरिक शिक्षा (मूल कोटि)",
+"Urdu (उर्दू)",
+"स्पेशल"
+]);
+
+// 6-8
+html += createTable([
+"English (अंग्रेजी)",
+"Hindi (हिंदी)",
+"Mathematics and Science (गणित और विज्ञान)",
+"Physical Education (Basic Grade) - शारीरिक शिक्षा (मूल कोटि)",
+"Sanskrit (संस्कृत)",
+"Social studies (सामाजिक अध्ययन)",
+"Urdu (उर्दू)",
+"स्पेशल"
+]);
+
+// 9-10 (already correct)
+html += createTable([
+"Arabic (अरबी)",
+"Autism spectrum disorder",
+"Bangla (बंगला)",
+"Blindness",
+"Cerebral palsy",
+"Commerce",
+"Dance",
+"Economics",
+"English",
+"Fine Arts",
+"Hearing impairment",
+"Hindi",
+"Home Science",
+"Intellectual disability",
+"Low Vision",
+"Maithili",
+"Mathematics",
+"Multiple disabilities",
+"Music",
+"Persian",
+"Physical Education",
+"Sanskrit",
+"Science",
+"Social Science",
+"Specific Learning",
+"Speech language",
+"Urdu",
+"विशेष शिक्षक"
+]);
+
+// 11-12 (same)
+html += createTable([
+"Accountancy",
+"Arabic",
+"Bangla",
+"Bhojpuri",
+"Botany",
+"Business Studies",
+"Chemistry",
+"Computer Science",
+"Economics",
+"English",
+"Entrepreneurship",
+"Environment",
+"Geography",
+"Hindi",
+"History",
+"Home Science",
+"Magahi",
+"Maithili",
+"Mathematics",
+"Music",
+"Pali",
+"Persian",
+"Philosophy",
+"Physical Education",
+"Physics",
+"Political Science",
+"Prakrit",
+"Psychology",
+"Sanskrit",
+"Sociology",
+"Urdu",
+"Zoology",
+"विशेष शिक्षक"
+]);
+
+
+document.getElementById("sections").innerHTML = html;
+document.querySelectorAll(".section")[0].style.display="block";
+
+// CALCULATION
+document.querySelectorAll("table").forEach(t=>{
+t.addEventListener("input",()=>{
+let rows = t.rows;
+
+for(let i=3;i<rows.length;i++){
+let inputs = rows[i].querySelectorAll("input");
+if(inputs.length===0) continue;
+
+let sum = 0;
+for(let j=0;j<8;j++){
+sum += Number(inputs[j].value||0);
+}
+inputs[8].value = sum;
+}
+});
+});
+
+// SUBMIT
+function submitAll(){
+
+let data=[];
+
+document.querySelectorAll(".section").forEach((sec,idx)=>{
+let rows = sec.querySelectorAll("tr");
+
+for(let i=3;i<rows.length;i++){
+let c = rows[i].querySelectorAll("input");
+if(c.length===0) continue;
+
+data.push({
+section:idx,
+subject:rows[i].cells[1].innerText,
+values:[...c].map(i=>i.value)
+});
+}
+});
+
+let finalData = {
+block:block.value,
+school:school.value,
+udise:udise.value,
+panchayat:panchayat.value,
+head:head.value,
+mobile:mobile.value,
+rooms:rooms.value,
+table:data
+};
+
+google.script.run.withSuccessHandler(()=>{
+alert("Saved ✅");
+}).submitData(finalData);
+
+}
+
+</script>
+ // Website se bhejte waqt dono tarike (Google Script & Direct Fetch)
+   <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbykBk-DgD7iDbKANdVBz66hyMebGhoLmnDE3X_Q_Eb-3AFoAZMlzGhjQebuUeGpLTI5/exec';
+
+    if (typeof google !== 'undefined' && google.script) {
+        google.script.run.withSuccessHandler(() => alert("Saved ✅")).submitData(finalData);
+    } else {
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(finalData)
+        }).then(() => alert("Report Submitted Successfully ✅")).catch(e => alert("Error: " + e));
+    }
+</script>
+</body>
+</html>
